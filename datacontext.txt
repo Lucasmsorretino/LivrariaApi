@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace SuperHeroApi.Data
+namespace LivrariaApi.Data
 {
     public class DataContext : DbContext
     {

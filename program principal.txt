@@ -1,4 +1,4 @@
-namespace SuperHeroApi
+namespace LivrariaApi
 {
     public class SuperHero
     {

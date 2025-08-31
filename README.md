@@ -17,7 +17,7 @@ Este projeto é uma API web que permite criar, ler, atualizar e deletar (CRUD) i
 ## 📁 Estrutura do Projeto
 
 ```
-SuperHeroApi/
+LivrariaApi/
 ├── Controllers/           # Controladores da API
 │   └── SuperHeroController.cs
 ├── Data/                 # Contexto do banco de dados
@@ -51,7 +51,7 @@ SuperHeroApi/
 1. Clone o repositório:
 ```bash
 git clone <url-do-repositorio>
-cd SuperHeroApi
+cd LivrariaApi
 ```
 
 2. Configure a string de conexão no `appsettings.json`:

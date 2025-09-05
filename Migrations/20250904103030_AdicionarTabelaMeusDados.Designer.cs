@@ -3,6 +3,7 @@ using System;
 using LivrariaApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LivrariaApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250904103030_AdicionarTabelaMeusDados")]
+    partial class AdicionarTabelaMeusDados
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.31");
@@ -27,16 +29,6 @@ namespace LivrariaApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Autor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Editora")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
@@ -78,46 +70,6 @@ namespace LivrariaApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MeusDados");
-                });
-
-            modelBuilder.Entity("LivrariaApi.Models.Usuario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("HashSenha")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.Property<string>("NomeUsuario")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("SaltSenha")
-                        .IsRequired()
-                        .HasColumnType("BLOB");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }

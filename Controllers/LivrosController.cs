@@ -1,5 +1,8 @@
-
-// Arquivo: Controllers/LivrosController.cs - Controller responsável por gerenciar operações CRUD de livros
+// Arquivo: Controllers/LivrosController.cs
+// Descrição: Controller responsável por gerenciar operações CRUD de livros
+// Simplificado para focar apenas na gestão de livros (autenticação removida)
+// Autor: Lucas Martins Sorrentino - RU: 4585828
+// Data: 04/09/2025 (atualizado)
 
 // Importa funcionalidades do Entity Framework para acesso ao banco de dados
 using LivrariaApi.Data;
@@ -10,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 // Importa coleções genéricas como List<T>
 using System.Collections.Generic; 
 // Importa suporte para programação assíncrona
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 
 // Define o namespace que organiza as classes relacionadas aos controllers
 namespace LivrariaApi.Controllers
@@ -29,14 +32,6 @@ namespace LivrariaApi.Controllers
         // O modificador 'readonly' garante que só pode ser atribuído no construtor
         private readonly DataContext _context;
 
-        // Objeto para armazenar os dados pessoais do aluno, conforme solicitado no exercício.
-        // Tipo anônimo criado com as propriedades Nome, RU e Curso
-        private readonly object _meusDados = new {
-            Nome = "Lucas Martins Sorrentino", // Nome completo do estudante
-            RU = "4585828", // Registro Único do estudante
-            Curso = "Tecnologia em Análise e Desenvolvimento de Sistemas" // Curso do estudante
-        };
-
         // Construtor da classe que recebe uma instância do DataContext
         // O ASP.NET Core injeta automaticamente a dependência através do sistema de DI
         public LivrosController(DataContext context)
@@ -45,6 +40,7 @@ namespace LivrariaApi.Controllers
             _context = context;
         }
 
+        // --- ENDPOINTS PARA LIVROS ---
         // Atributo que indica que este método responde a requisições HTTP GET
         // Quando chamado, retorna todos os livros cadastrados no banco de dados
         [HttpGet]
@@ -68,7 +64,7 @@ namespace LivrariaApi.Controllers
             // Adiciona o novo livro ao contexto do Entity Framework
             // Neste ponto, o livro ainda não foi salvo no banco, apenas marcado para inserção
             _context.Livros.Add(livro);
-            
+
             // Executa todas as mudanças pendentes no banco de dados de forma assíncrona
             // É aqui que o livro é realmente inserido na tabela
             await _context.SaveChangesAsync();
@@ -87,7 +83,7 @@ namespace LivrariaApi.Controllers
             // Busca no banco de dados um livro com o ID fornecido na requisição
             // FindAsync() é otimizado para busca por chave primária
             var dbLivro = await _context.Livros.FindAsync(request.Id);
-            
+
             // Verifica se o livro foi encontrado no banco de dados
             if (dbLivro == null)
                 // Retorna erro HTTP 400 (Bad Request) se o livro não existir
@@ -97,10 +93,13 @@ namespace LivrariaApi.Controllers
             // Modifica o título do livro com o valor recebido na requisição
             dbLivro.Titulo = request.Titulo;
             // Modifica o autor do livro com o valor recebido na requisição
-            // Modifica o autor do livro com o valor recebido na requisição
             dbLivro.Autor = request.Autor;
             // Modifica o ano do livro com o valor recebido na requisição
             dbLivro.Ano = request.Ano;
+            // Modifica a editora do livro com o valor recebido na requisição
+            dbLivro.Editora = request.Editora;
+            // Modifica a cidade de publicação do livro com o valor recebido na requisição
+            dbLivro.Cidade = request.Cidade;
 
             // Salva todas as alterações no banco de dados de forma assíncrona
             // O Entity Framework detecta automaticamente as propriedades modificadas
@@ -120,7 +119,7 @@ namespace LivrariaApi.Controllers
             // Busca no banco de dados o livro com o ID fornecido
             // FindAsync() localiza o registro pela chave primária de forma assíncrona
             var dbLivro = await _context.Livros.FindAsync(id);
-            
+
             // Verifica se o livro foi encontrado no banco de dados
             if (dbLivro == null)
                 // Retorna erro HTTP 400 (Bad Request) se o livro não existir
@@ -129,7 +128,7 @@ namespace LivrariaApi.Controllers
             // Marca o livro para remoção no contexto do Entity Framework
             // O registro ainda não foi deletado do banco, apenas marcado para exclusão
             _context.Livros.Remove(dbLivro);
-            
+
             // Executa a remoção no banco de dados de forma assíncrona
             // É aqui que o registro é efetivamente deletado da tabela
             await _context.SaveChangesAsync();
@@ -140,3 +139,4 @@ namespace LivrariaApi.Controllers
         } // Fim do método Delete
     } // Fim da classe LivrosController
 } // Fim do namespace LivrariaApi.Controllers
+

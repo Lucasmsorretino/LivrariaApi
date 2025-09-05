@@ -27,5 +27,17 @@ namespace LivrariaApi
         // Propriedade que armazena o ano de publicação do livro
         // Tipo int para representar anos como números inteiros
         public int Ano { get; set; }
+
+        // Propriedade que armazena o nome da editora do livro
+        // Atributo MaxLength define o tamanho máximo de 200 caracteres para o campo
+        [MaxLength(200)]
+        // Propriedade com valor padrão como string vazia para evitar valores null
+        public string Editora { get; set; } = string.Empty;
+
+        // Propriedade que armazena a cidade de publicação do livro
+        // Atributo MaxLength define o tamanho máximo de 100 caracteres para o campo
+        [MaxLength(100)]
+        // Propriedade com valor padrão como string vazia para evitar valores null
+        public string Cidade { get; set; } = string.Empty;
     } // Fim da classe Livro
 } // Fim do namespace LivrariaApi

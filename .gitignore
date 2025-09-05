@@ -355,3 +355,18 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+# Arquivos de Dependências e Build do .NET
+[Bb]in/
+[Oo]bj/
+
+# Arquivos gerados pelo usuário e IDEs
+*.user
+*.suo
+.DS_Store
+
+# Banco de dados SQLite
+*.db
+*.db-journal
+
+# Arquivos de log
+*.log

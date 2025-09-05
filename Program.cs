@@ -1,9 +1,20 @@
-// Importação global do namespace Data da LivrariaApi para acesso ao DataContext em todo o projeto
-global using LivrariaApi.Data;
-// Importação global do Entity Framework Core para funcionalidades de ORM em todo o projeto
-global using Microsoft.EntityFrameworkCore;
-// Importação global do namespace principal da LivrariaApi para acesso às classes de modelo e dependências
-global using LivrariaApi;   // chamar a pasta que contem a dependencia de objetos
+// Arquivo: Program.cs
+// Descrição: Ponto de entrada da aplicação ASP.NET Core - configuração de serviços e middleware
+// Inclui configuração JWT, CORS, Entity Framework e injeção de dependências
+// Autor: Lucas Martins Sorrentino - RU: 4585828
+// Data: 04/09/2025 (atualizado com autenticação JWT)
+
+// Importações globais para uso em todo o projeto
+global using LivrariaApi.Data;              // Contexto de dados global
+global using Microsoft.EntityFrameworkCore;  // Entity Framework global
+global using LivrariaApi;                    // Dependências principais global
+
+// Importações específicas para autenticação JWT
+using LivrariaApi.Services;                  // Serviços da aplicação
+using Microsoft.AspNetCore.Authentication.JwtBearer;  // Autenticação JWT
+using Microsoft.IdentityModel.Tokens;       // Tokens de segurança
+using Microsoft.OpenApi.Models;             // Modelos OpenAPI para Swagger
+using System.Text;                           // Codificação de texto
 
 // Declaração de uma constante string que define o nome da política CORS customizada
 var MyCorsConfig = "_myCorsConfig"; // nome da política
@@ -41,6 +52,10 @@ builder.Services.AddCors(options =>
 // Adiciona o serviço de controllers ao container de dependências da aplicação
 // Permite que a aplicação reconheça e utilize controllers para roteamento
 builder.Services.AddControllers();
+
+// Registra o serviço de autenticação no container de DI
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 // Registra a interface IDependencia_obj e sua implementação no container de DI
 // AddScoped cria uma instância por requisição HTTP, garantindo isolamento de dados
 builder.Services.AddScoped<IDependencia_obj, Dependencia_obj>();// para localizar no servidor o objetos de dependencias. 
@@ -55,8 +70,69 @@ builder.Services.AddDbContext<DataContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Adiciona o serviço para exploração de endpoints da API (necessário para Swagger)
 builder.Services.AddEndpointsApiExplorer();
-// Adiciona o gerador Swagger para documentação automática da API
-builder.Services.AddSwaggerGen();  //  chamado do swagger no servidor.
+// Adiciona o gerador Swagger para documentação automática da API com suporte JWT
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
+    { 
+        Title = "Livraria API", 
+        Version = "v1",
+        Description = "API para gerenciamento de livraria com autenticação JWT"
+    });
+    
+    // Configuração do esquema de segurança JWT para Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "Insira o token JWT desta forma: Bearer {seu token}",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // Aplica o esquema de segurança a todos os endpoints
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
+});
+
+// Configuração da autenticação JWT
+var jwtSecretKey = builder.Configuration["JwtSettings:SecretKey"] ?? "MinhaChaveSecretaSuperSeguraParaJWT2024!@#$%";
+var key = Encoding.ASCII.GetBytes(jwtSecretKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "LivrariaApi",
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JwtSettings:Audience"] ?? "LivrariaApi",
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 // Constrói a aplicação web com todas as configurações definidas anteriormente
 var app = builder.Build();
@@ -80,6 +156,9 @@ app.UseCors();  // aplica a politica CORS padrão a todos os pontos de extremida
 
 // Força novamente o redirecionamento HTTPS (duplicado - pode ser removido)
 app.UseHttpsRedirection();
+
+// Habilita o middleware de autenticação JWT
+app.UseAuthentication();
 
 // Habilita o middleware de autorização para controle de acesso
 app.UseAuthorization();

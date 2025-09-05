@@ -3,6 +3,7 @@ using System;
 using LivrariaApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LivrariaApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250904105354_AdicionarTabelaUsuarios")]
+    partial class AdicionarTabelaUsuarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.31");
@@ -27,16 +29,6 @@ namespace LivrariaApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Autor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Editora")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
